@@ -384,7 +384,7 @@ watch(activeStep, (newStep) => {
                          ==========================================  -->
                         <StepPanel v-slot="{ activateCallback }" value="1"
                             class="rounded-2xl border-2 border-green-iimp bg-white-price shadow-wmc">
-                            <FormValidacionDoc ref="childFormValidacionDoc" :tipo_origen="tipo_origen" />
+                            <FormValidacionDoc ref="childFormValidacionDoc" :tipo_origen="tipo_origen"  v-if="activeStep === '1'"/>
 
                             <!-- <div class="fixed bottom-4 right-4 z-50 md:hidden animate-fade-in-up">
                                 <Button label="Validate" icon="pi pi-arrow-right" iconPos="right"
@@ -524,7 +524,7 @@ watch(activeStep, (newStep) => {
             </div>
 
             <div class="p-8 md:p-12 bg-slate-50 px-4 overflow-y-auto flex-1">
-                <div 
+                <div v-if="bloqueoExtranjero"
                     class="p-4 mb-6 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 animate-fade-in-up">
                     <i class="pi pi-info-circle text-amber-600 text-xl mt-0.5"></i>
                     <p class="text-sm text-amber-800 leading-relaxed">
@@ -615,7 +615,7 @@ watch(activeStep, (newStep) => {
                                         : 'bg-gradient-to-r from-[#002855] to-blue-700 group-hover:from-blue-800 group-hover:to-blue-600'
                                 ]">
                                     {{ bloqueoExtranjero ? 'Not Available' : 'Continue Purchase' }}
-                                    <i  class="pi pi-arrow-right text-xs"></i>
+                                    <i v-if="!bloqueoExtranjero" class="pi pi-arrow-right text-xs"></i>
                                 </span>
                             </div>
                         </div>
@@ -651,7 +651,7 @@ watch(activeStep, (newStep) => {
             </div>
         </Dialog>
 
-        <Dialog  v-model:visible="showRequisitosModal" modal header="Requirements and Conditions"
+        <Dialog v-if="false" v-model:visible="showRequisitosModal" modal header="Requirements and Conditions"
             :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="flex flex-col gap-4">
                 <p class="text-gray-600">Please review the requirements before proceeding to payment.</p>
