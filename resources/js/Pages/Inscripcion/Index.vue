@@ -83,7 +83,7 @@ const irAlFormulario = (id) => {
         category: id,
         section: macroSeccion.value,// Esto enviará 'inscripciones' o 'viajes'
         profile: categoria.id_perfil,
-        course:0
+        course: 0
     };
 
     if (categoria.grupo === 'autor') {
@@ -111,6 +111,45 @@ const scrollToCategories = () => {
 <template>
     <AppLayout class="bg-gradient-wmc">
         <div class="px-6 py-12 mx-auto max-w-6xl min-h-[80vh] flex flex-col justify-center font-sans">
+            <!-- <div
+                class="bg-slate-900 text-white p-6 rounded-xl my-6 text-xs border-l-4 border-purple-500 shadow-2xl overflow-auto max-h-96">
+                <h2 class="text-lg font-bold mb-4 text-purple-400">🔍 Inspección de Props (Frontend)</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-black/40 p-3 rounded border border-white/10">
+                        <p class="text-gray-400 uppercase font-bold">Total Categorías:</p>
+                        <p class="text-xl font-mono">{{ props.categorias.length }}</p>
+                    </div>
+                    <div class="bg-black/40 p-3 rounded border border-white/10">
+                        <p class="text-gray-400 uppercase font-bold">Grupo Seleccionado:</p>
+                        <p class="text-xl font-mono text-cyan-400">{{ grupoSeleccionado || 'NINGUNO' }}</p>
+                    </div>
+                </div>
+
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-purple-300 border-b border-white/20">
+                            <th class="p-2">ID</th>
+                            <th class="p-2">Nombre</th>
+                            <th class="p-2">Grupo (DB)</th>
+                            <th class="p-2">Perfil ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="cat in props.categorias" :key="cat.id"
+                            class="border-b border-white/5 hover:bg-white/5">
+                            <td class="p-2 font-mono">{{ cat.id }}</td>
+                            <td class="p-2 font-bold">{{ cat.nombre_en }}</td>
+                            <td class="p-2">
+                                <span :class="cat.grupo === 'participante' ? 'text-green-400' : 'text-yellow-400'">
+                                    {{ cat.grupo || 'NULL' }}
+                                </span>
+                            </td>
+                            <td class="p-2 font-mono">{{ cat.id_perfil }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> -->
             <!-- <div class="preventa-banner-home animate-fade-in-down mb-8">
                 <div class="banner-home-content p-3 md:p-6 flex items-center gap-3">
                     <div class="banner-home-icon shrink-0">

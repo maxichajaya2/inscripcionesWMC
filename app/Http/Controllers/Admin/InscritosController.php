@@ -38,6 +38,25 @@ class InscritosController extends Controller
                 $cuotaPagada = $inscripcion->facturacion?->cuotas->first(fn($c) => $c->niubiz !== null);
                 $pagoNiubiz = $cuotaPagada?->niubiz;
 
+                // --- LÓGICA DE TARJETA CON TRIM() PARA EVITAR ESPACIOS EN BLANCO ---
+                $cardNum = trim($pagoNiubiz?->card_num ?? '');
+                $marcaTarjeta = 'Otra/Desconocida';
+
+                if ($cardNum) {
+                    if (str_starts_with($cardNum, '4')) {
+                        $marcaTarjeta = 'Visa';
+                    } elseif (str_starts_with($cardNum, '5') || str_starts_with($cardNum, '2')) {
+                        $marcaTarjeta = 'Mastercard';
+                    } elseif (str_starts_with($cardNum, '34') || str_starts_with($cardNum, '37')) {
+                        $marcaTarjeta = 'American Express';
+                    } elseif (str_starts_with($cardNum, '36') || str_starts_with($cardNum, '38')) {
+                        $marcaTarjeta = 'Diners Club';
+                    } elseif (str_starts_with($cardNum, '62')) {
+                        $marcaTarjeta = 'UnionPay';
+                    }
+                }
+                // -------------------------------------------------------------------
+
                 return [
                     'id' => $inscripcion->id,
                     'fecha_registro' => $inscripcion->created_at ? $inscripcion->created_at->format('d/m/Y H:i') : '-',
@@ -46,6 +65,10 @@ class InscritosController extends Controller
                     'cargo' => $inscripcion->texto_cargo ?? 'No especificado',
                     'qr'=> $inscripcion->qr ?? null,
                     'cupon_viaje' => $inscripcion->cupon_viaje ?? null,
+
+                    // Variables nuevas agregadas para Vue
+                    'marca_tarjeta' => $marcaTarjeta,
+                    'numero_tarjeta' => $cardNum,
 
                     // Datos Completos de Persona
                     'persona' => $inscripcion->persona,

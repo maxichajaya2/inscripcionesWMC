@@ -38,7 +38,8 @@ class RedirectIfAuthenticated
 
                 // Redirección por Etapas
                 if ($user->hasRole('admin')) return redirect('/admin/index');
-                if ($user->hasRole('asociado')) return redirect('/asociados/index');
+                // if ($user->hasRole('asociado')) return redirect('/asociados/index');
+                if ($user->hasRole('asociado')) return redirect('/cupones');
 
                 return redirect(RouteServiceProvider::HOME);
             }

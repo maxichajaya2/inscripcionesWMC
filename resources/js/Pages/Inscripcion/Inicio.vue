@@ -34,8 +34,8 @@ const props = defineProps({
     section: String,
     perfil_id: Number,
     autores: Array,
-    course:Number,
-    cupones:Object
+    course: Number,
+    cupones: Object
 
 })
 
@@ -123,7 +123,7 @@ const validate = async (value) => {
             if (resDoc.validate) {
                 // Guardamos DNI y TipoDoc aquí para usarlos en el siguiente paso
                 data_persona.value = resDoc.formValidacionDoc;
-                 mostrarModalFacturacion.value = true;
+                mostrarModalFacturacion.value = true;
                 loading.value = false;
                 return true;
             }
@@ -258,7 +258,7 @@ const confirmarYProcesar = async (extras = []) => {
 
         if (response.data.status && response.data.formulario) {
             // formDataPayment.value = response.data.formulario;
-             formDataPayment.value = response.data
+            formDataPayment.value = response.data
 
             // Avanzamos al paso 4
             activeStep.value = "4";
@@ -291,6 +291,20 @@ const confirmarYProcesar = async (extras = []) => {
     }
 };
 
+// const handleInscripcionHaciaCursos = async () => {
+//     loading.value = true;
+//     const resIns = await childFormInscription.value.getInscripcion();
+
+//     if (resIns.validate) {
+//         tempResIns.value = resIns;
+
+//         // ESTO ES LO QUE DISPARA EL MODAL
+//         showConfirmNoExtrasModal.value = true;
+//         // await confirmarYProcesar([]);
+//     }
+//     loading.value = false;
+// };
+
 const handleInscripcionHaciaCursos = async () => {
     loading.value = true;
     const resIns = await childFormInscription.value.getInscripcion();
@@ -298,9 +312,15 @@ const handleInscripcionHaciaCursos = async () => {
     if (resIns.validate) {
         tempResIns.value = resIns;
 
-        // ESTO ES LO QUE DISPARA EL MODAL
-        showConfirmNoExtrasModal.value = true;
-        // await confirmarYProcesar([]);
+        // --- LÓGICA AUTOMÁTICA PARA ID 40 ---
+        if (categoriaIdActual.value == '40') {
+            // Si es la categoría 40, saltamos el modal y procesamos directo
+            console.log("Categoría 40 detectada: Saltando modal de cursos...");
+            await confirmarYProcesar([]);
+        } else {
+            // Para cualquier otra categoría, mostramos el modal de "Upgrade"
+            showConfirmNoExtrasModal.value = true;
+        }
     }
     loading.value = false;
 };
@@ -402,6 +422,54 @@ watch(activeStep, (newStep) => {
     <AppLayout class="bg-gradient-wmc">
 
 
+        <!-- <div class="bg-slate-900 text-white p-6 rounded-xl my-6 text-xs border-l-4 border-blue-500 shadow-2xl">
+            <h2 class="text-lg font-bold mb-4 text-blue-400 flex items-center gap-2">
+                <i class="pi pi-search"></i> Lógica de Filtrado de Categoría
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/40 p-3 rounded-lg border border-white/10">
+                    <p class="text-yellow-500 font-black uppercase mb-1">1. Entrada desde URL:</p>
+                    <p>ID detectado (?category=): <span class="text-white text-sm font-mono bg-blue-900 px-2 rounded">{{
+                            categoriaIdActual || 'Ninguno' }}</span></p>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-white/10">
+                    <p class="text-green-500 font-black uppercase mb-1">2. Resultado del Match:</p>
+                    <p>Nombre: <span class="text-white text-sm">{{ categoria_seleccionada?.nombre_en || 'Buscando...'
+                            }}</span></p>
+                    <p>Precio base: <span class="text-white text-sm">${{ categoria_seleccionada?.precio || '0.00'
+                            }}</span></p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <p class="text-purple-400 font-black uppercase mb-1">3. Lista Completa de Categorías en Props:</p>
+                <div class="overflow-auto max-h-40 bg-black/20 p-2 rounded">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-white/10 text-gray-400">
+                                <th class="p-1">ID</th>
+                                <th class="p-1">Nombre (EN)</th>
+                                <th class="p-1">Match?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="cat in Object.values(props.categorias)" :key="cat.id"
+                                :class="{ 'bg-blue-500/20 text-blue-300': cat.id == categoriaIdActual }">
+                                <td class="p-1 font-mono">{{ cat.id }}</td>
+                                <td class="p-1">{{ cat.nombre_en }}</td>
+                                <td class="p-1">
+                                    <i v-if="cat.id == categoriaIdActual" class="pi pi-check-circle"></i>
+                                    <span v-else>-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> -->
+
         <div class="px-3 mx-auto max-w-7xl md:px-6 lg:px-8 relative">
 
             <div id="titulo_inicial" class="mt-8 mb-8">
@@ -456,8 +524,9 @@ watch(activeStep, (newStep) => {
                         <StepPanel v-slot="{ activateCallback }" value="2"
                             class="rounded-2xl border-2 border-green-iimp bg-white shadow-wmc">
 
-                            <FormInscription ref="childFormInscription" :data_persona="data_persona"  :cupones="props.cupones" :activarModal="mostrarModalFacturacion"
-                                :categorias="props.categorias"  />
+                            <FormInscription ref="childFormInscription" :data_persona="data_persona"
+                                :cupones="props.cupones" :activarModal="mostrarModalFacturacion"
+                                :categorias="props.categorias" />
 
                             <div
                                 class="sticky bottom-0 left-0 w-full p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.1)] z-[50] flex justify-between gap-3 rounded-b-2xl">
@@ -475,7 +544,7 @@ watch(activeStep, (newStep) => {
                             class="rounded-2xl border-2 border-green-iimp bg-white shadow-wmc">
 
                             <FormTourCourse ref="childFormTourCourse" :data_persona="data_persona"
-                                :adicionales="props.adicionales" :section="sectionUrl" :course="props.course"   />
+                                :adicionales="props.adicionales" :section="sectionUrl" :course="props.course" />
 
                             <div
                                 class="sticky bottom-0 left-0 w-full p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.1)] z-[50] flex justify-between gap-3 rounded-b-2xl">
@@ -495,8 +564,9 @@ watch(activeStep, (newStep) => {
                             class="rounded-2xl border-2 border-green-iimp bg-white shadow-wmc">
 
                             <FormPayment ref="childFormPayment" :data_persona="data_persona"
-                                :formulario="formDataPayment" :categoria_seleccionada="categoria_seleccionada" :descuento="formDataPayment?.descuento"
-                                :extras_seleccionados="extras_para_mostrar" :datos_facturacion="tempResIns?.formInscription" :tipo_origen="tipo_origen" />
+                                :formulario="formDataPayment" :categoria_seleccionada="categoria_seleccionada"
+                                :descuento="formDataPayment?.descuento" :extras_seleccionados="extras_para_mostrar"
+                                :datos_facturacion="tempResIns?.formInscription" :tipo_origen="tipo_origen" />
 
                             <div
                                 class="sticky bottom-0 left-0 w-full p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.1)] z-[50] flex justify-between gap-3 rounded-b-2xl">

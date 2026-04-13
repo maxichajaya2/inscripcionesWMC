@@ -5,8 +5,21 @@ import { ref, computed, watch, nextTick } from 'vue';
 import * as yup from 'yup';
 
 const props = defineProps({
-    usuarios: Array,
-    roles: Array
+    usuarios: {
+        type: [Array, Object],
+        default: () => []
+    },
+    roles: {
+        type: Array,
+        default: () => []
+    }
+});
+
+// ==========================================
+// 0. NORMALIZACIÓN DE DATOS
+// ==========================================
+const safeUsuarios = computed(() => {
+    return Array.isArray(props.usuarios) ? props.usuarios : Object.values(props.usuarios);
 });
 
 // ==========================================
@@ -98,7 +111,7 @@ watch(
 // ==========================================
 const filteredUsers = computed(() => {
     const query = searchQuery.value.toLowerCase();
-    return props.usuarios.filter(user =>
+    return safeUsuarios.value.filter(user =>
         (user.name && user.name.toLowerCase().includes(query)) ||
         (user.email && user.email.toLowerCase().includes(query))
     );
@@ -106,14 +119,18 @@ const filteredUsers = computed(() => {
 
 watch(searchQuery, () => { currentPage.value = 1; });
 
-const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage));
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage)));
+
 const paginatedUsers = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     return filteredUsers.value.slice(start, start + itemsPerPage);
 });
 
-const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++; };
+// NUEVAS Funciones de Navegación Completas
+const goToFirstPage = () => { currentPage.value = 1; };
 const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++; };
+const goToLastPage = () => { currentPage.value = totalPages.value; };
 
 // ==========================================
 // 5. MÉTODOS Y FUNCIONES
@@ -151,31 +168,6 @@ const openModal = async (user = null) => {
     }, 50);
 };
 
-// const submit = async () => {
-//     // 1. Validamos formato con Yup (frontend)
-//     const isValid = await validateForm();
-//     if (!isValid) return;
-
-//     const action = editingUser.value ? route('usuarios.update', editingUser.value.id) : route('usuarios.store');
-//     const method = editingUser.value ? 'put' : 'post';
-
-//     form[method](action, {
-//         onSuccess: () => {
-//             isModalOpen.value = false;
-//             displayToast(editingUser.value ? 'Actualizado.' : 'Creado.');
-//             form.reset();
-//         },
-//         onError: (errors) => {
-//             // Si el error es de email, mostramos un toast rápido para avisar
-//             if (errors.email) {
-//                 displayToast("Atención: " + errors.email);
-//             }
-//         },
-//         preserveScroll: true
-//     });
-// };
-
-
 const submit = async () => {
     // 1. Validamos formato con Yup (frontend)
     const isValid = await validateForm();
@@ -210,7 +202,6 @@ const submit = async () => {
     });
 };
 
-
 const confirmDelete = (user) => {
     userToDelete.value = user;
     isDeleteModalOpen.value = true;
@@ -236,7 +227,6 @@ const executeDelete = () => {
     <AuthenticatedLayout>
         <div class="space-y-6">
 
-            <!-- HEADER Y BUSCADOR -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="font-black text-2xl text-slate-800 tracking-tight">Gestión de Usuarios</h2>
@@ -257,7 +247,6 @@ const executeDelete = () => {
                 </div>
             </div>
 
-            <!-- TABLA -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-100">
@@ -315,16 +304,41 @@ const executeDelete = () => {
                     </table>
                 </div>
 
-                <!-- PAGINACIÓN -->
                 <div v-if="filteredUsers.length > 0" class="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <span class="text-xs text-slate-500 font-medium">
                         Mostrando <span class="font-bold text-slate-700">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> a
                         <span class="font-bold text-slate-700">{{ Math.min(currentPage * itemsPerPage, filteredUsers.length) }}</span>
                         de <span class="font-bold text-slate-700">{{ filteredUsers.length }}</span> usuarios
                     </span>
-                    <div class="flex gap-1.5">
-                        <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">Anterior</button>
-                        <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">Siguiente</button>
+
+                    <div class="flex items-center gap-1.5">
+                        <button @click="goToFirstPage" :disabled="currentPage === 1"
+                            class="px-3 py-1.5 text-[11px] font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm uppercase tracking-wider"
+                            title="Ir al inicio">
+                            Inicio
+                        </button>
+
+                        <button @click="prevPage" :disabled="currentPage === 1"
+                            class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+                            title="Página anterior">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+
+                        <span class="px-3 py-1 text-xs font-black text-slate-700 bg-slate-200/50 rounded-md mx-1">
+                            Pág. {{ currentPage }} de {{ totalPages }}
+                        </span>
+
+                        <button @click="nextPage" :disabled="currentPage === totalPages"
+                            class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+                            title="Página siguiente">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+
+                        <button @click="goToLastPage" :disabled="currentPage === totalPages"
+                            class="px-3 py-1.5 text-[11px] font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm uppercase tracking-wider"
+                            title="Ir al final">
+                            Final
+                        </button>
                     </div>
                 </div>
             </div>
@@ -332,7 +346,6 @@ const executeDelete = () => {
     </AuthenticatedLayout>
 
     <Teleport to="body">
-        <!-- TOAST ALERTS -->
         <Transition enter-active-class="transform ease-out duration-300 transition" enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
             <div v-if="showToast" class="fixed top-6 right-6 z-[200] max-w-sm w-full bg-slate-900 shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden">
                 <div class="p-4 flex items-center w-full">
@@ -346,7 +359,6 @@ const executeDelete = () => {
             </div>
         </Transition>
 
-        <!-- MODAL FORMULARIO -->
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
             <div v-if="isModalOpen" class="fixed inset-0 z-[150] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
                 <div class="flex min-h-full items-center justify-center p-4 py-10">
@@ -359,7 +371,6 @@ const executeDelete = () => {
 
                         <form @submit.prevent="submit" class="p-6 space-y-6">
 
-                            <!-- ALERTA DE CAMPOS OBLIGATORIOS -->
                             <div class="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-3">
                                 <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <div>
@@ -368,7 +379,6 @@ const executeDelete = () => {
                                 </div>
                             </div>
 
-                            <!-- SECCIÓN: DATOS PERSONALES -->
                             <div>
                                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-4">Información de la Cuenta</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -385,7 +395,6 @@ const executeDelete = () => {
                                         <span v-if="form.errors.email" class="block text-red-500 text-[10px] mt-1 font-bold">{{ form.errors.email }}</span>
                                     </div>
 
-                                    <!-- SELECT DE ROL ÚNICO -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Rol Asignado <span class="text-red-500">*</span></label>
                                         <select v-model="form.role" :class="{'border-red-500': form.errors.role}" translate="no" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 outline-none text-sm font-bold text-indigo-600">
@@ -398,12 +407,10 @@ const executeDelete = () => {
                                 </div>
                             </div>
 
-                            <!-- SECCIÓN: SEGURIDAD -->
                             <div>
                                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-4">Seguridad</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                                    <!-- CONTRASEÑA -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Contraseña <span v-if="!editingUser" class="text-red-500">*</span></label>
                                         <div class="relative">
@@ -416,7 +423,6 @@ const executeDelete = () => {
                                         <span v-if="form.errors.password" class="block text-red-500 text-[10px] mt-1 font-bold">{{ form.errors.password }}</span>
                                     </div>
 
-                                    <!-- CONFIRMAR CONTRASEÑA -->
                                     <div>
                                         <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Confirmar Contraseña <span v-if="!editingUser" class="text-red-500">*</span></label>
                                         <div class="relative">
@@ -444,7 +450,6 @@ const executeDelete = () => {
             </div>
         </Transition>
 
-        <!-- MODAL ELIMINAR -->
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
             <div v-if="isDeleteModalOpen" class="fixed inset-0 z-[150] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
                 <div class="flex min-h-full items-center justify-center p-4">

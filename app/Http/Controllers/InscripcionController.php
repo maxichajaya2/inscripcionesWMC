@@ -59,7 +59,7 @@ class InscripcionController extends Controller
             $categoria->grupo = str_contains(strtoupper($categoria->nombre_en), 'AUTHOR') ? 'autor' : 'participante';
         }
 
-        //  dd($categorias->toArray());
+
         $title = "Registration WMC 2026";
 
         return Inertia::render('Inscripcion/Index', compact('categorias', 'title'));

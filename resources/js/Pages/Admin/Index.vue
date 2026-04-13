@@ -17,7 +17,7 @@ const props = defineProps({
 
             <div>
                 <h2 class="font-black text-2xl text-slate-800 tracking-tight">Resumen General</h2>
-                <p class="text-sm text-slate-500 mt-1">Métricas y actividad reciente de la plataforma PROEXPLO 2026.</p>
+                <p class="text-sm text-slate-500 mt-1">Métricas y actividad reciente de la plataforma WMC 2026.</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -52,7 +52,7 @@ const props = defineProps({
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex items-center gap-4 group hover:shadow-md transition-shadow">
+                <!-- <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex items-center gap-4 group hover:shadow-md transition-shadow">
                     <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                     </div>
@@ -60,7 +60,7 @@ const props = defineProps({
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Usos Totales</p>
                         <p class="text-3xl font-black text-slate-800 tracking-tight">{{ stats.usos_totales_cupones }}</p>
                     </div>
-                </div>
+                </div> -->
 
             </div>
 

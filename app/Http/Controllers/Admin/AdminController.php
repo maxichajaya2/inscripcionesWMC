@@ -21,8 +21,16 @@ class AdminController extends Controller
         $stats = [
             'total_usuarios' => User::count(),
             'total_roles' => Role::count(),
-            'cupones_activos' => Cupon::where('is_active', true)->count(),
-            'usos_totales_cupones' => Cupon::sum('usos_actuales'),
+            'cupones_activos' => Cupon::where('is_active', true)
+                ->where('fecha_fin', '>', now())
+                ->where('fecha_inicio', '<=', now())
+                ->where('is_delete', false)
+                ->count(),
+            'usos_totales_cupones' => Cupon::where('is_active', true)
+                ->where('is_delete', false)
+                ->where('fecha_inicio', '<=', now())
+                ->where('fecha_fin', '>', now())
+                ->sum('usos_actuales'),
         ];
 
         // 2. Actividad Reciente: Últimos 5 usuarios registrados
@@ -33,8 +41,13 @@ class AdminController extends Controller
 
         // 3. Actividad Reciente: Últimos 5 cupones creados
         $ultimosCupones = Cupon::latest()
+            ->where('is_active', true)
+            ->where('fecha_fin', '>', now())
+            ->where('fecha_inicio', '<=', now())
+            ->where('is_delete', false)
             ->take(5)
             ->get();
+
 
         return inertia('Admin/Index', [
             'stats' => $stats,
