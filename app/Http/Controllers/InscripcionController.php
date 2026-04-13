@@ -34,6 +34,7 @@ class InscripcionController extends Controller
     {
         $categorias = CategoriaInscripcion::query()
             ->where('isactive', true)
+            ->where('id', '!=', 40)
             ->where(function ($query) {
                 $query->where('nombre_en', 'LIKE', '%AUTHOR%')
                     ->orWhere('nombre_en', 'LIKE', '%PARTICIPANT%');
@@ -60,6 +61,7 @@ class InscripcionController extends Controller
         }
 
 
+        //  dd($categorias->toArray());
         $title = "Registration WMC 2026";
 
         return Inertia::render('Inscripcion/Index', compact('categorias', 'title'));
