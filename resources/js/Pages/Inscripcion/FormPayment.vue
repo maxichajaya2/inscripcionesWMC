@@ -9,6 +9,7 @@ const props = defineProps({
     vouchers: Object,
     tipo_origen: [String, Number],
     datos_facturacion: Object,
+    perfil_id: [String, Number],
     extras_seleccionados: {
         type: Array,
         default: () => []
@@ -168,7 +169,7 @@ const mountNiubiz = async (data) => {
 
 onMounted(() => {
     if (props.formulario) mountNiubiz(props.formulario);
-    // Forzamos la limpieza de cualquier alerta que haya quedado de los pasos anteriores
+    console.log("El perfil_id recibido es:", props.perfil_id);
 
 });
 
@@ -200,6 +201,7 @@ const scriptData = computed(() => {
                 <template #content>
 
                     <div v-if="formulario">
+
                         <!--
                         <div v-if="datos_facturacion" class="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700">
                             <div class="text-[10px] text-gray-400 uppercase font-bold mb-2 tracking-widest">
@@ -278,7 +280,7 @@ const scriptData = computed(() => {
                             <div class="flex items-start gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                                 <input type="checkbox" id="check_terms" v-model="termsAccepted"
                                     class="mt-1 w-5 h-5 cursor-pointer accent-blue-600" />
-                                <label for="check_terms"
+                                <!-- <label for="check_terms"
                                     class="text-xs text-gray-700 leading-tight cursor-pointer select-none">
                                     I accept the
                                     <a href="/documents/reglamento.pdf" target="_blank"
@@ -287,6 +289,23 @@ const scriptData = computed(() => {
                                     <a href="/documents/politicas.pdf" target="_blank"
                                         class="text-blue-700 font-bold underline">Registration Policies</a>
                                     and the
+                                    <a href="/documents/privacy_policy.pdf" target="_blank"
+                                        class="text-blue-700 font-bold underline">Privacy Policy</a>
+                                    of WMC 2026.
+                                </label> -->
+                                <label for="check_terms"
+                                    class="text-xs text-gray-700 leading-tight cursor-pointer select-none">
+                                    I accept the
+
+                                    <span v-if="perfil_id != 10">
+                                        <a href="/documents/reglamento.pdf" target="_blank"
+                                            class="text-blue-700 font-bold underline">Terms and Conditions</a>,
+                                        the
+                                        <a href="/documents/politicas.pdf" target="_blank"
+                                            class="text-blue-700 font-bold underline">Registration Policies</a>
+                                        and the
+                                    </span>
+
                                     <a href="/documents/privacy_policy.pdf" target="_blank"
                                         class="text-blue-700 font-bold underline">Privacy Policy</a>
                                     of WMC 2026.
@@ -313,7 +332,7 @@ const scriptData = computed(() => {
                                     <span class="text-purple-700 font-bold">{{ datos_facturacion?.razonSocial || 'the company' }}</span>
                                     with RUC
                                     <span class="text-purple-700 font-bold">{{ datos_facturacion?.documentoEmpresa
-                                    }}</span>.
+                                        }}</span>.
                                 </p>
                                 <p v-else>
                                     You are requesting a <strong>SALES RECEIPT</strong> under the name of

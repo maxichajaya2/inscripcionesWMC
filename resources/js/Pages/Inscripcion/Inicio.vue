@@ -563,7 +563,7 @@ watch(activeStep, (newStep) => {
                         <StepPanel v-slot="{ activateCallback }" value="4"
                             class="rounded-2xl border-2 border-green-iimp bg-white shadow-wmc">
 
-                            <FormPayment ref="childFormPayment" :data_persona="data_persona"
+                            <FormPayment ref="childFormPayment" :data_persona="data_persona" :perfil_id="props.perfil_id"
                                 :formulario="formDataPayment" :categoria_seleccionada="categoria_seleccionada"
                                 :descuento="formDataPayment?.descuento" :extras_seleccionados="extras_para_mostrar"
                                 :datos_facturacion="tempResIns?.formInscription" :tipo_origen="tipo_origen" />
