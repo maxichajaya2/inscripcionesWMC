@@ -276,6 +276,19 @@ const scriptData = computed(() => {
                             </div>
                         </div>
 
+                        <div v-if="perfil_id == 10"
+                            class="my-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg shadow-sm">
+                            <div class="flex gap-3">
+                                <i class="pi pi-info-circle text-blue-600 text-lg mt-1"></i>
+                                <div class="text-xs text-blue-900 leading-relaxed">
+                                    <p class="font-bold mb-1 uppercase tracking-tight">Important Information:</p>
+                                    <p class="font-bold border-t border-blue-200 pt-2">
+                                        Please note: Registration for this program DOES NOT include access to the WMC
+                                        Congress or the Trade Fair.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="px-4 mb-6">
                             <div class="flex items-start gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                                 <input type="checkbox" id="check_terms" v-model="termsAccepted"
