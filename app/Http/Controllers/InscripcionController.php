@@ -166,7 +166,7 @@ class InscripcionController extends Controller
 
     public function getForm(Request $request)
     {
-        // dd($request->all());
+        //  dd($request->all());
         // 1. Validaciones iniciales
 
         $this->validateRequest($request);
@@ -326,8 +326,26 @@ class InscripcionController extends Controller
                 ->where('is_active', true)
                 ->first();
 
+            // if ($cupon) {
+            //     $descuento_monto = ($valor_unitario_cat * ($cupon->valor / 100));
+            //     $valor_unitario_cat = $valor_unitario_cat - $descuento_monto;
+            // }
             if ($cupon) {
-                $descuento_monto = ($valor_unitario_cat * ($cupon->valor / 100));
+                // 1. Leemos el tipo de descuento (por defecto asumimos porcentaje por seguridad)
+                $tipoDescuento = $cupon->tipo_descuento ?? 'porcentaje';
+
+                if (strtolower($tipoDescuento) === 'fijo') {
+                    // LÓGICA FIJA: El monto de descuento es directamente el valor del cupón
+                    $descuento_monto = (float)$cupon->valor;
+                } else {
+                    // LÓGICA PORCENTAJE: La matemática original que ya tenías
+                    $descuento_monto = ($valor_unitario_cat * ((float)$cupon->valor / 100));
+                }
+
+                // 2. Seguridad crucial: Evitar que el descuento sea mayor al precio (totales negativos)
+                $descuento_monto = min($descuento_monto, $valor_unitario_cat);
+
+                // 3. Restamos el descuento calculado al valor de la categoría
                 $valor_unitario_cat = $valor_unitario_cat - $descuento_monto;
             }
         }

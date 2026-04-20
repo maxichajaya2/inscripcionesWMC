@@ -86,6 +86,7 @@ const allowedTypes = ['application/pdf', 'image/png', 'image/jpg', 'image/jpeg']
 const fileupload = ref(null);
 const alphanumericMessage = ref('');
 const descuentoAplicadoMonto = ref(0);
+const tipoDescuentoAplicado = ref('');
 // Agregamos un estado para controlar si el usuario puede editar manualmente
 const isEditingBilling = ref(false);
 const cuponIdSeleccionado = ref(null);
@@ -290,10 +291,21 @@ const validarCuponLocal = async () => {
             descuentoAplicadoMonto.value = Number(cuponData.valor);
             cuponIdSeleccionado.value = cuponData.id;
 
+            tipoDescuentoAplicado.value = cuponData.tipo_descuento?.toLowerCase() || 'porcentaje';
+
+            const textoValor = tipoDescuentoAplicado.value === 'fijo'
+                ? `USD ${cuponData.valor}`
+                : `${cuponData.valor}%`;
+
             mensajeVoucher.value = {
-                texto: `¡Coupon of ${cuponData.valor}% valid for ${cuponData.razon_social}!`,
+                texto: `${words.msg_coupon_of} ${textoValor} ${words.msg_coupon_valid_for} ${cuponData.razon_social}!`,
                 tipo: 'success'
-            };
+            }
+
+            // mensajeVoucher.value = {
+            //     texto: `¡Coupon of ${cuponData.valor}% valid for ${cuponData.razon_social}!`,
+            //     tipo: 'success'
+            // };
 
             toast.add({
                 severity: 'success',
@@ -484,6 +496,7 @@ watch(empresaCupon, () => {
     mensajeVoucher.value = { texto: '', tipo: '' };
     cuponAplicado.value = false;
     descuentoAplicadoMonto.value = 0;
+    tipoDescuentoAplicado.value = '';
 });
 
 
@@ -783,9 +796,23 @@ const onlyNumberKey = (event) => {
     return true;
 }
 
+// const montoDescuentoEfectivo = computed(() => {
+//     // Calculamos cuánto dinero representa el % de descuento sobre el total
+//     return (total.value * descuentoAplicadoMonto.value) / 100;
+// });
+
 const montoDescuentoEfectivo = computed(() => {
-    // Calculamos cuánto dinero representa el % de descuento sobre el total
-    return (total.value * descuentoAplicadoMonto.value) / 100;
+    if (!cuponAplicado.value) return 0;
+
+    if (tipoDescuentoAplicado.value === 'fijo') {
+        // Lógica Fija: El descuento es directamente la cantidad.
+        // Usamos Math.min por seguridad: si el total es $50 y el cupón fijo es de $100,
+        // solo descontamos $50 para que el totalFinal no sea negativo.
+        return Math.min(Number(descuentoAplicadoMonto.value), Number(total.value));
+    } else {
+        // Lógica original de Porcentaje
+        return (Number(total.value) * Number(descuentoAplicadoMonto.value)) / 100;
+    }
 });
 
 const totalFinalConDescuento = computed(() => {
@@ -1049,7 +1076,7 @@ defineExpose({ getInscripcion });
                                 <div class="flex items-center gap-2">
                                     <i class="pi pi-tag text-xs"></i>
                                     <span class="text-sm uppercase tracking-tight">
-                                        Corporate Discount ({{ descuentoAplicadoMonto }}%):
+                                        Corporate Discount ({{ tipoDescuentoAplicado === 'fijo' ? 'USD ' + descuentoAplicadoMonto : descuentoAplicadoMonto + '%' }}):
                                     </span>
                                 </div>
                                 <span class="text-sm">- USD {{ Number(montoDescuentoEfectivo || 0).toFixed(2) }}</span>
@@ -1215,7 +1242,7 @@ defineExpose({ getInscripcion });
                             <InputText v-model="direccionEmpresa" class="w-full border-green-iimp"
                                 :disabled="esRuc20 || loading_doc" />
                             <small class="text-red-600" v-if="errors.direccionEmpresa">{{ errors.direccionEmpresa
-                            }}</small>
+                                }}</small>
                         </div>
 
                         <div class="grid gap-6 md:grid-cols-2">
@@ -1231,7 +1258,7 @@ defineExpose({ getInscripcion });
                                 <InputText v-model="correo_facturador" class="w-full border-green-iimp"
                                     :disabled="loading_doc" />
                                 <small class="text-red-600" v-if="errors.correo_facturador">{{ errors.correo_facturador
-                                }}</small>
+                                    }}</small>
                             </div>
                         </div>
                     </div>

@@ -468,7 +468,7 @@ const executeDelete = () => {
                                         <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Tipo <span class="text-red-500">*</span></label>
                                         <select v-model="form.tipo_descuento" :class="{ 'border-red-500': form.errors.tipo_descuento }" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 outline-none text-sm font-medium">
                                             <option value="porcentaje">Porcentaje (%)</option>
-                                            <option value="monto">Monto Fijo ($)</option>
+                                            <option value="fijo">Monto Fijo ($)</option>
                                         </select>
                                         <span v-if="form.errors.tipo_descuento" class="block text-red-500 text-[10px] mt-1 font-bold">{{ form.errors.tipo_descuento }}</span>
                                     </div>
