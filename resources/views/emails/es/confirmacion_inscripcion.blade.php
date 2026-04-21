@@ -352,6 +352,9 @@
                                 <p style="margin: 15px 0 0 0; font-size: 11px; color: #94a3b8;">
                                     * Valid for the event's accommodation/transfer service.
                                 </p>
+                                <p style="margin: 15px 0 0 0; font-size: 11px; color: #94a3b8;">
+                                    * Valid for the event's accommodation/transfer service. Terms and conditions apply.
+                                </p>
                             </td>
                         </tr>
                     @endif
