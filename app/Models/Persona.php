@@ -78,4 +78,10 @@ class Persona extends Model
     {
         return $this->belongsTo(Empresa::class, "id_empresa", "id");
     }
+
+    public function nacionalidad(): BelongsTo
+    {
+        // Asumiendo que tu modelo para la tabla pais se llama "Pais"
+        return $this->belongsTo(Pais::class, 'id_nacionalidad', 'id');
+    }
 }

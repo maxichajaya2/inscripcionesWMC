@@ -366,6 +366,171 @@ class WebServiceController extends Controller
         }
     }
 
+
+    public function wsMultieventos_WMC($facturacion, $persona, $inscripcion, $niubiz)
+    {
+        // Función anónima para limpiar caracteres especiales y tildes
+        $clean = function ($str) {
+            $unwanted = array(
+                'Š' => 'S',
+                'š' => 's',
+                'Ž' => 'Z',
+                'ž' => 'z',
+                'À' => 'A',
+                'Á' => 'A',
+                'Â' => 'A',
+                'Ã' => 'A',
+                'Ä' => 'A',
+                'Å' => 'A',
+                'Æ' => 'A',
+                'Ç' => 'C',
+                'È' => 'E',
+                'É' => 'E',
+                'Ê' => 'E',
+                'Ë' => 'E',
+                'Ì' => 'I',
+                'Í' => 'I',
+                'Î' => 'I',
+                'Ï' => 'I',
+                'Ñ' => 'N',
+                'Ò' => 'O',
+                'Ó' => 'O',
+                'Ô' => 'O',
+                'Õ' => 'O',
+                'Ö' => 'O',
+                'Ø' => 'O',
+                'Ù' => 'U',
+                'Ú' => 'U',
+                'Û' => 'U',
+                'Ü' => 'U',
+                'Ý' => 'Y',
+                'Þ' => 'B',
+                'ß' => 'Ss',
+                'à' => 'a',
+                'á' => 'a',
+                'â' => 'a',
+                'ã' => 'a',
+                'ä' => 'a',
+                'å' => 'a',
+                'æ' => 'a',
+                'ç' => 'c',
+                'è' => 'e',
+                'é' => 'e',
+                'ê' => 'e',
+                'ë' => 'e',
+                'ì' => 'i',
+                'í' => 'i',
+                'î' => 'i',
+                'ï' => 'i',
+                'ð' => 'o',
+                'ñ' => 'n',
+                'ò' => 'o',
+                'ó' => 'o',
+                'ô' => 'o',
+                'õ' => 'o',
+                'ö' => 'o',
+                'ø' => 'o',
+                'ù' => 'u',
+                'ú' => 'u',
+                'û' => 'u',
+                'ü' => 'u',
+                'ý' => 'y',
+                'þ' => 'b',
+                'ÿ' => 'y'
+            );
+            return strtr($str, $unwanted);
+        };
+
+        // Concatenamos el nombre completo usando trim() para evitar espacios dobles
+        $nombreCompleto = trim($persona->nombres . ' ' . $persona->apellido_paterno . ' ' . ($persona->apellido_materno ?? ''));
+
+        // Construcción del Payload
+        $data_ws = [
+            "eventCode"   => 'WMC26',
+            "passType"    => "vip",
+            "accessScope" => "multi-day",
+            "holderData"  => [
+                "firstName"    => substr(strtoupper($clean($persona->nombres)), 0, 30),
+                "lastName"     => substr(strtoupper($clean($persona->apellido_paterno . ' ' . ($persona->apellido_materno ?? ''))), 0, 60),
+                "name"         => substr(strtoupper($clean($nombreCompleto)), 0, 90),
+                "email"        => (string)$persona->correo,
+                "documentType" => $persona->tipoDocumento?->name_en ?? "DNI",
+                "documentNum"  => (string)$persona->documento,
+                "phone"        => substr($persona->celular ?? "999999999", 0, 20),
+                "companyName"  => substr(strtoupper($clean($persona->empresa ?? " ")), 0, 50),
+                "position"     => substr(strtoupper($clean($persona->ocupacion ?? " ")), 0, 50),
+                "country"      => $persona->nacionalidad?->codigo ?? "PE"
+            ],
+        ];
+
+        // --- CABECERAS ESPECÍFICAS DE LA API ---
+        $cabecerasProexplo = [
+            'x-api-key: 40c71a7ae8a4fda1df9d645150d56b6306ba0b7c773ec985a20d6ba8da9b6875',
+            'Origin: https://www.proexplo.com.pe',
+            'User-Agent: PostmanRuntime/7.39.0',
+            'Accept: */*'
+        ];
+
+        // Envío del Payload a la API (Pasando las cabeceras como 3er parámetro)
+        $response = $this->sendWsMultieventos($this->url_multieventos, json_encode($data_ws), $cabecerasProexplo);
+
+        // --- MANEJO DE ERRORES ---
+        $statusCode = $response->status ?? 200;
+
+        // Evaluamos el código de respuesta
+        switch ($statusCode) {
+            case 200:
+            case 201:
+                return [
+                    'success' => true,
+                    'message' => 'Inscripción enviada correctamente.',
+                    'data'    => $response->body ?? $response
+                ];
+
+            case 400:
+                return [
+                    'success' => false,
+                    'message' => 'Error 400: Datos inválidos. Faltan campos requeridos en el envío.',
+                    'code'    => 400
+                ];
+
+            case 401:
+                return [
+                    'success' => false,
+                    'message' => 'Error 401: API key incorrecta o faltante en la cabecera.',
+                    'code'    => 401
+                ];
+
+            case 404:
+                return [
+                    'success' => false,
+                    'message' => 'Error 404: El evento (MAXPROEXPLO26) no fue encontrado.',
+                    'code'    => 404
+                ];
+
+            case 409:
+                return [
+                    'success' => false,
+                    'message' => 'Error 409: El email (' . $persona->correo . ') ya está registrado para este evento.',
+                    'code'    => 409
+                ];
+
+            case 429:
+                return [
+                    'success' => false,
+                    'message' => 'Error 429: Se ha excedido el límite de peticiones al servidor (100 req/min). Intente más tarde.',
+                    'code'    => 429
+                ];
+
+            default:
+                return [
+                    'success' => false,
+                    'message' => 'Error de comunicación. Código HTTP: ' . $statusCode,
+                    'code'    => $statusCode
+                ];
+        }
+    }
+
     private function validateService($request)
     {
         if ($request->ok()) {

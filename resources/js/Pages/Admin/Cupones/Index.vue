@@ -532,7 +532,7 @@ const executeDelete = () => {
                                             <span class="text-red-500">*</span></label>
                                         <input v-model="form.codigo_cupon" type="text" placeholder="Ej: MINEX-2026"
                                             :class="{ 'border-red-500 ring-2 ring-red-100': form.errors.codigo_cupon }"
-                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-700 font-bold uppercase" />
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-700 font-bold" />
                                         <span v-if="form.errors.codigo_cupon"
                                             class="block text-red-500 text-[10px] mt-1 font-bold">{{
                                                 form.errors.codigo_cupon }}</span>
@@ -573,7 +573,7 @@ const executeDelete = () => {
                                             Social <span class="text-red-500">*</span></label>
                                         <input v-model="form.razon_social" type="text"
                                             :class="{ 'border-red-500': form.errors.razon_social }"
-                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 outline-none text-sm uppercase" />
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 outline-none text-sm" />
                                         <span v-if="form.errors.razon_social"
                                             class="block text-red-500 text-[10px] mt-1 font-bold">{{
                                                 form.errors.razon_social }}</span>

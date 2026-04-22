@@ -277,11 +277,11 @@ const validarCuponLocal = async () => {
     try {
         // 3. Normalizamos datos para la búsqueda
         const idBuscado = Number(empresaCupon.value.id);
-        const codigoIngresado = codigoVoucher.value.toString().trim().toUpperCase();
+        const codigoIngresado = codigoVoucher.value.toString().trim();
 
         const cuponData = Object.values(props.cupones).find(c => {
             const idBD = Number(c.id);
-            const codigoBD = c.codigo_cupon.toString().trim().toUpperCase();
+            const codigoBD = c.codigo_cupon.toString().trim();
             return idBD === idBuscado && codigoBD === codigoIngresado;
         });
 
@@ -453,7 +453,12 @@ watch(documentoEmpresa, (newValue) => {
     }
 });
 
-
+const camposFacturacionBloqueados = computed(() => {
+    if (esRuc20.value) {
+        return !isEditingBilling.value || !showManualAlert.value;
+    }
+    return !isEditingBilling.value;
+});
 
 // En FormInscription.vue
 watch(tipoDocumentoEmpresa, (newVal, oldVal) => {
@@ -1043,7 +1048,7 @@ defineExpose({ getInscripcion });
                                     </label>
                                     <InputGroup>
                                         <InputText v-model="codigoVoucher" placeholder="Enter code"
-                                            class="border-blue-300 uppercase" :disabled="!empresaCupon" />
+                                            class="border-blue-300" :disabled="!empresaCupon" />
                                         <Button label="Validate" icon="pi pi-ticket"
                                             class="!bg-blue-700 !border-blue-700 hover:!bg-blue-800"
                                             :loading="loadingCupon" :disabled="!codigoVoucher"
@@ -1231,7 +1236,7 @@ defineExpose({ getInscripcion });
                             <label class="block mb-1">Business Name / Full Name <span
                                     class="text-red-600">*</span></label>
                             <InputText v-model="razonSocial" class="w-full border-green-iimp"
-                                :disabled="esRuc20 || loading_doc" />
+                                :disabled="esRuc20 || loading_doc || camposFacturacionBloqueados" />
                             <small class="text-red-600" v-if="errors.razonSocial">{{ errors.razonSocial }}</small>
                         </div>
                     </div>
@@ -1240,7 +1245,7 @@ defineExpose({ getInscripcion });
                         <div class="w-full sm:col-span-1">
                             <label class="block mb-1">Address <span class="text-red-600">*</span></label>
                             <InputText v-model="direccionEmpresa" class="w-full border-green-iimp"
-                                :disabled="esRuc20 || loading_doc" />
+                                :disabled="esRuc20 || loading_doc || camposFacturacionBloqueados" />
                             <small class="text-red-600" v-if="errors.direccionEmpresa">{{ errors.direccionEmpresa
                                 }}</small>
                         </div>
@@ -1249,14 +1254,14 @@ defineExpose({ getInscripcion });
                             <div class="w-full sm:col-span-1">
                                 <label class="block mb-1">Billing Contact <span class="text-red-600">*</span></label>
                                 <InputText v-model="responsable" class="w-full border-green-iimp"
-                                    :disabled="loading_doc" />
+                                    :disabled="loading_doc || camposFacturacionBloqueados" />
                                 <small class="text-red-600" v-if="errors.responsable">{{ errors.responsable }}</small>
                             </div>
 
                             <div class="w-full sm:col-span-1">
                                 <label class="block mb-1">Billing Email <span class="text-red-600">*</span></label>
                                 <InputText v-model="correo_facturador" class="w-full border-green-iimp"
-                                    :disabled="loading_doc" />
+                                    :disabled="loading_doc || camposFacturacionBloqueados" />
                                 <small class="text-red-600" v-if="errors.correo_facturador">{{ errors.correo_facturador
                                     }}</small>
                             </div>

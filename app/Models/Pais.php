@@ -11,4 +11,11 @@ class Pais extends Model
 
     protected $connection = "pgsql";
     protected $table = "pais";
+
+
+    public function personas()
+    {
+        // Un país "tiene muchas" personas
+        return $this->hasMany(Persona::class, 'id_nacionalidad', 'id');
+    }
 }
