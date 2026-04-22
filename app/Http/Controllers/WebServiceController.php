@@ -21,6 +21,7 @@ class WebServiceController extends Controller
 
         $this->urlPersonValidation = 'https://secure2.iimp.org:8443/KB_WEBASOCJavaEnvironment/rest/validarAsociado';
         $this->url_new_connection = "https://services.iimp.org.pe";
+        $this->url_multieventos = "https://eventos.sistemasiimp.org.pe/api/batches/import/public";
     }
 
     public function validatePersonMember($id_sie_documento, $numero_documento)
