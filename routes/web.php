@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CuponController;
 use App\Http\Controllers\Admin\InscritosController;
+use App\Http\Controllers\Admin\MultieventoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/inscritos', [InscritosController::class, 'index'])->name('inscritos.index');
     Route::get('/cupones/{cupone}', [CuponController::class, 'show'])->name('cupones.show');
     Route::get('/cupones/{cupon}/usos', [CuponController::class, 'getUsos'])->name('cupones.usos');
+
+     // Envío Masivo a la API
+    Route::get('/multieventos/inscritos', [MultieventoController::class, 'index'])->name('multieventos.index');
+    Route::post('/multieventos/enviar-api', [MultieventoController::class, 'enviarApi'])->name('multieventos.enviar-api');
 });
 
 // --- RUTAS DE ASOCIADOS ---
