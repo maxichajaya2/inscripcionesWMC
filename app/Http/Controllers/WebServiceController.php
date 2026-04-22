@@ -578,4 +578,41 @@ class WebServiceController extends Controller
             return $response;
         }
     }
+
+    public function sendWsMultieventos($url, $data, $customHeaders = [])
+    {
+        // Cabeceras base obligatorias
+        $headers = [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data)
+        ];
+
+        // Combinar con las cabeceras personalizadas que pasemos
+        if (!empty($customHeaders)) {
+            $headers = array_merge($headers, $customHeaders);
+        }
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+
+        // ¡NUEVO!: Capturamos el código HTTP (Ej. 200, 400, 401)
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+
+        $decoded_response = json_decode($response);
+        $body = (json_last_error() === JSON_ERROR_NONE) ? $decoded_response : $response;
+
+        // Retornamos un objeto con el status y el cuerpo de la respuesta
+        return (object)[
+            'status' => $httpCode,
+            'body'   => $body
+        ];
+    }
 }
