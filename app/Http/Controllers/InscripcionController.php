@@ -196,8 +196,6 @@ class InscripcionController extends Controller
         $inscripcion = $this->createInscripcion($request, $persona, $categoria, $facturacion, $dias_json);
 
 
-          dd($persona->tipoDocumento->name_es);
-
         // 7. Generar respuesta de Niubiz
         // dd($this->generateNiubizResponse($persona, $inscripcion, $facturacion));
         return $this->generateNiubizResponse($persona, $inscripcion, $facturacion, $descuento);
