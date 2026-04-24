@@ -460,6 +460,12 @@ const camposFacturacionBloqueados = computed(() => {
     return !isEditingBilling.value;
 });
 
+const camposContactoBloqueados = computed(() => {
+    // Se bloquean solo si NO ha habido una búsqueda exitosa y NO está en modo manual
+    return !showSuccessAlert.value && !showManualAlert.value;
+});
+
+
 // En FormInscription.vue
 watch(tipoDocumentoEmpresa, (newVal, oldVal) => {
     const p = props.data_persona?.persona || props.data_persona;
@@ -1254,14 +1260,14 @@ defineExpose({ getInscripcion });
                             <div class="w-full sm:col-span-1">
                                 <label class="block mb-1">Billing Contact <span class="text-red-600">*</span></label>
                                 <InputText v-model="responsable" class="w-full border-green-iimp"
-                                    :disabled="loading_doc || camposFacturacionBloqueados" />
+                                    :disabled="loading_doc || camposContactoBloqueados" />
                                 <small class="text-red-600" v-if="errors.responsable">{{ errors.responsable }}</small>
                             </div>
 
                             <div class="w-full sm:col-span-1">
                                 <label class="block mb-1">Billing Email <span class="text-red-600">*</span></label>
                                 <InputText v-model="correo_facturador" class="w-full border-green-iimp"
-                                    :disabled="loading_doc || camposFacturacionBloqueados" />
+                                    :disabled="loading_doc || camposContactoBloqueados" />
                                 <small class="text-red-600" v-if="errors.correo_facturador">{{ errors.correo_facturador
                                     }}</small>
                             </div>
