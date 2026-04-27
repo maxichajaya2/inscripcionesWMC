@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CuponController;
 use App\Http\Controllers\Admin\InscritosController;
 use App\Http\Controllers\Admin\MultieventoController;
+use App\Http\Controllers\Admin\SieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
      // Envío Masivo a la API
     Route::get('/multieventos/inscritos', [MultieventoController::class, 'index'])->name('multieventos.index');
     Route::post('/multieventos/enviar-api', [MultieventoController::class, 'enviarApi'])->name('multieventos.enviar-api');
+
+      // Envío Masivo  SIE
+    Route::get('/sie/inscritos', [SieController::class, 'index'])->name('sie.index');
+    Route::post('/sie/enviar-api', [SieController::class, 'enviarApi'])->name('sie.enviar-api');
 });
 
 // --- RUTAS DE ASOCIADOS ---
