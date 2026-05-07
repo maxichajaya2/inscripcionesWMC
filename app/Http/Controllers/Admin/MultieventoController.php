@@ -11,7 +11,6 @@ use Inertia\Inertia;
 class MultieventoController extends Controller
 {
 
-
     public function index()
     {
         $inscripciones = Inscripcion::with([

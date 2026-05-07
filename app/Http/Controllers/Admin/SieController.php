@@ -150,7 +150,6 @@ class SieController extends Controller
         ]);
     }
 
-
     public function enviarApi(Request $request)
     {
         // 1. Validamos que nos lleguen los datos completos (JSON) desde Vue

@@ -56,8 +56,11 @@ const schema = yup.object({
     pais: yup.mixed().required('Country is required'),
     direccionPersona: yup.string().required('Address is required'),
     correo: yup.string().email().required('Email is required'),
+    // celular: yup.string()
+    //     .matches(/^\+?[0-9]*$/, 'Only numbers are allowed (the + at the beginning is optional)')
+    //     .required('Phone is required'),
     celular: yup.string()
-        .matches(/^\+?[0-9]*$/, 'Only numbers are allowed (the + at the beginning is optional)')
+        .matches(/^\+?[0-9\s-]*$/, 'Only numbers, spaces, and hyphens are allowed (the + at the beginning is optional)')
         .required('Phone is required'),
     sexo: yup.string().required('Gender is required'),
     fecha_nacimiento: yup.date().required('Date of Birth is required')

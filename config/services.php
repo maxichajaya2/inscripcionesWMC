@@ -37,5 +37,8 @@ return [
         'url_api'     => env('NIUBIZ_URL_API'),
         'url_js'      => env('NIUBIZ_URL_JS'),
     ],
+    // 'sie_inscripciones' => [
+    //     'url_inscripciones' => env('SIE_URL_INSCRIPCIONES'),
+    // ],
 
 ];
